@@ -77,7 +77,8 @@ while (true){
 
 // Pergunta 4
 while(true){
-  q4 = prompt("Você sentiu uma presença misteriosa próxima e foi à procura, você conseguiu encontrá-la?(Sim/Não)");
+  console.log("Você sentiu uma presença misteriosa próxima e foi à procura.");
+  q4 = prompt("Você conseguiu encontrá-la?(Sim/Não)");
   q4 = q4.toLowerCase();
   if(q4 == 's' || q4 == 'sim'){
     q4 = 's';
@@ -86,8 +87,8 @@ while(true){
     // Pergunta 5
     while(true){
       console.log();
-      q5 = prompt("Você adquiriu conhecimento da entrada da caverna brilhante, e dentro dela você encontrou um Majestoso " +       
-      cao_lendario + ", você tentou capturá-lo?(Sim/Não)");
+      console.log("Você adquiriu conhecimento da entrada da caverna brilhante, e dentro dela você encontrou um Majestoso " + cao_lendario + ".");
+      q5 = prompt("Você tentou capturá-lo?(Sim/Não)");
       q5 = q5.toLowerCase();
       if(q5 == 's' || q5 == 'sim'){
         q5 = 's';
