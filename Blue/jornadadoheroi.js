@@ -141,23 +141,23 @@ console.log("Você triunfa de maneira inquestionável e seus feitos serão lembr
 console.log();
 //Corvo
 if(q1 == 's'){
-  console.log("O" , corvo_sombrio , capturado);
+  console.log("O" , corvo_sombrio , capturado + ".");
 }else{
-  console.log("O" , corvo_sombrio , ncapturado);
+  console.log("O" , corvo_sombrio , ncapturado + ".");
 }
 
 //Cervo
 if(q2 == 's'){
-  console.log("O", cervo_mistico , capturado);
+  console.log("O", cervo_mistico , capturado + ".");
 }else{
-  console.log("O", cervo_mistico , ncapturado);
+  console.log("O", cervo_mistico , ncapturado + ".");
 }
 
 //Aranha
 if(q3 == 's'){
-  console.log("A", aranha_transparente , capturada);
+  console.log("A", aranha_transparente , capturada + ".");
 }else{
-  console.log("A", aranha_transparente , ncapturada);
+  console.log("A", aranha_transparente , ncapturada + ".");
 }
 
 //Conhecimento secreto
