@@ -2,13 +2,14 @@
 const prompt = require('prompt-sync')();
 console.clear();
 
-//Declaração de variáveis
-let nivel_de_alucinacao = 10;
+//Declaração de variáveis da história
+let treino = 0;
 let investigacao = 0;//para marcar progresso de investigação.
+let usodiario = false;
 //lista para armezanar tabela de status à ser inserido ao objeto personagem dependendo da classe escolhida
-let status = [["Guerreiro", 8, 4, 60, 1, 1,"Espada"],
-               ["Ninja", 4, 2, 100, 1, 60,"Katana"],
-               ["Arqueiro", 8, 1, 100, 60, 1,"Arco"]]
+let statusinicial = [["Guerreiro", 8, 4, 60, 1, 1,"Espada"],
+                     ["Ninja", 4, 2, 100, 1, 60,"Katana"],
+                     ["Arqueiro", 8, 1, 100, 60, 1,"Arco"]]
 
 //Objeto Personagem para guardar e alterar dados e status do Personagem.
 const personagem = {
@@ -22,10 +23,11 @@ const personagem = {
     taxadeacerto: 0,
     taxadeesquiva: 0,
     taxadecritico: 0,
+    concentracao: false,
     bolsa: {
-      erva_vermelha: 10,//Restaura Vida
+      erva_vermelha: 3,//Restaura Vida
       carne: 0,
-      moedas: 50,
+      moedas: 25,
       arma: "",
       armapadrao: "", 
     },
@@ -43,12 +45,12 @@ const personagem = {
     },
 
     //Método para calcular dano
-    ataquecalc: function calc() {
-      if(rng(100)>this.taxadeacerto){
+    ataquecalc: function calc(bonusatk=false) {
+      if(rng(100)>this.taxadeacerto && bonusatk==false){
         console.log("Você errou o ataque!");
         return 0;
       }
-      if(rng(100)<=this.taxadecritico){
+      if(rng(100)<=this.taxadecritico || bonusatk==true){
         console.log("Você acertou um ataque crítico!");
         return this.ataque*2;
       }
@@ -87,7 +89,7 @@ function inimigo (nome, pv, ataque){
         },
         //método para aplicar o efeito (Alucinar) que altera os status do inimigo
         this.alucinar = function alucinar(){
-          if(rng(100)<=nivel_de_alucinacao){  
+          if(rng(100)<=(15+(tempo.dia * 5))){  
             this.ataque *= 2;
             if(this.nome == "Leão Rei")
               this.pv = 100;
@@ -140,6 +142,8 @@ const tempo = {
   dia: 1,
   hora: 6,
   minuto:47,
+  horastring: "06",
+  minutostring: "47",
 
   cronos: function(mins){
     let horaconvert = mins/60;
@@ -153,12 +157,20 @@ const tempo = {
     if(this.hora >= 24){
       this.hora -= 24;
       this.dia++;
-      nivel_de_alucinacao += 2;
+      //nivel_de_alucinacao += 5;
+    }
+    this.horastring = this.hora.toString();
+    this.minutostring = this.minuto.toString();
+    if(this.hora <= 9){
+      this.horastring = "0" + this.horastring;
+    }
+    if(this.minuto <= 9){
+      this.minutostring = "0" + this.minutostring;
     }
     
   },
   exibir: function(){
-  let result = this.hora + ":" + this.minuto + "h" +" - "+ "Dia: " + this.dia;
+  let result = this.horastring + ":" + this.minutostring + "h" +" - "+ "Dia: " + this.dia;
    return result;
   }
 }
@@ -173,7 +185,7 @@ function exibicao_de_dados(){
   console.log("-"+personagem.nome+"-")
   console.log(" Vida: "+ personagem.pv +"\t\t\t\t\t\tErvas Vermelhas: "+personagem.bolsa.erva_vermelha );
   console.log(" Ataque: "+ personagem.ataque + "\t\t\t\t\t\tMoedas: "+ personagem.bolsa.moedas);
-  console.log(nivel_de_alucinacao);
+  //console.log(15+(tempo.dia*5));
   console.log();
 }
 
@@ -185,7 +197,7 @@ function prosseguir(){
 //Função Batalha
 function batalha(){
   console.clear();
-  let enemy = lista_enemy[rng(1)];
+  let enemy = lista_enemy[rng(2)-1];
   enemy.alucinar();
   //setTimeout(".")*1000;
   exibicao_de_dados();
@@ -195,27 +207,43 @@ function batalha(){
     exibicao_de_dados();
     
     console.log("1. Atacar.\t\t\t\t\t"+enemy.nome);
-    console.log("2. Fugir.\t\t\t\t\t"+"Vida: "+enemy.pv);
+    console.log("2. Concentrar.\t\t\t\t"+"Vida: "+enemy.pv);
     let acao = prompt("");
+    //ATACAR-------------------------
     if(acao == 1){
       exibicao_de_dados();
-      let personatk = personagem.ataquecalc();
+      let personatk = personagem.ataquecalc(personagem.concentracao);
       console.log("Você causou", personatk, "de dano ao", enemy.nome);
       //Tira vida do inimigo
       enemy.receber_dano(personatk);
+      personagem.concentracao = false;
       prosseguir();
 
       if(enemy.pv <= 0){
         exibicao_de_dados();
         console.log("Você derrotou o", enemy.nome);
+        let recompensa = rng(11)+14;
+        personagem.bolsa.moedas += recompensa;
+        console.log("Você obteve, " + recompensa + " Moedas.");
         prosseguir();
         enemy.resetpv();
         break;
-      }
+      } 
       exibicao_de_dados();
       //Tira vida do personagem
       let danoinimigo = personagem.receber_dano(enemy.ataque);
       console.log(enemy.nome,"te atacou e causou", danoinimigo, "de dano à você.");    
+      prosseguir();
+    }
+    //CONCENTRAR------------
+    if(acao == 2 && usodiario != true){
+      console.log("Você fecha seus olhos por um segundo, usando a meditação ancestral através do tempo tudo a sua volta parece mais lento, seu próximo ataque será crítico e vc recupera " + 2 + " pontos de vida.")
+      personagem.pv += 2;
+      personagem.concentracao = true;
+      usodiario = true;
+      prosseguir();
+    }else if(acao == 2 && usodiario == true){
+      console.log("Você só pode usar essa habilidade 1 vez por dia.");
       prosseguir();
     }
     if(personagem.pv <= 0)
@@ -358,7 +386,7 @@ while(true){
   console.log("Digite 1, 2, 3 ou 4.")
   let entrada = prompt(">>");
   if(entrada == "1" || entrada == "2" || entrada == "3"){
-      personagem.class_select(status[entrada-1][0],status[entrada-1][1],status[entrada-1][2],status[entrada-1][3],status[entrada-1][4],status[entrada-1][5],status[entrada-1][6]);
+      personagem.class_select(statusinicial[entrada-1][0],statusinicial[entrada-1][1],statusinicial[entrada-1][2],statusinicial[entrada-1][3],statusinicial[entrada-1][4],statusinicial[entrada-1][5],statusinicial[entrada-1][6]);
     break;
   }
   if(entrada == 4){
@@ -377,10 +405,10 @@ while(true){
 //Primeiro Ciclo.
 king: while(true){
   exibicao_de_dados();
-  console.log("1. Sair para caçar e coletar.");
-  console.log("2. Treinar.");
-  console.log("3. Ir a cidade próxima para comprar e vender recursos.");
-  console.log("4. Investigar o que pode estar enlouquecendo as criaturas.");
+  console.log("1. Sair para caçar e coletar. - 8h");
+  console.log("2. Treinar. - 6h");
+  console.log("3. Ir a cidade próxima para comprar e vender recursos. - 2h");
+  console.log("4. Investigar o que pode estar enlouquecendo as criaturas. - 4h");
   console.log("5. Usar Erva Vermelha para restaurar a vida");
   if(investigacao >= 3){
     console.log("6. Deixar o vilarejo aos cuidados da sua filha mais velha e partir para próxima região.");
@@ -390,20 +418,20 @@ king: while(true){
   switch(choose){
     case 1:
       caca_coleta();
-      tempo.cronos(480);
+      tempo.cronos(517);
       break;
     case 2:
       treinar();
-      tempo.cronos(360);
+      tempo.cronos(345);
       break;
     case 3:
       cidade();
-      tempo.cronos(120);
+      tempo.cronos(122);
       break;
     case 4:
       console.log("investigou");
       investigacao++;
-      tempo.cronos(240);
+      tempo.cronos(243);
       break;
     case 5:
       personagem.curar();
@@ -421,7 +449,15 @@ king: while(true){
     console.clear(); console.log("\n\n\t\t\t\t*********GAME*OVER**********\n\n");
     break;
   }
-  console.log("menu");
+  if(tempo.hora <= 6){
+    exibicao_de_dados();
+    tempo.cronos(360);
+    console.log();
+    console.log("Já é tarde e você se sente cansado, você volta para casa e descansa por 6 horas...");
+    console.log("Agora são " + tempo.horastring + ":" + tempo.minutostring);
+    console.log();
+    usodiario = false;
+  }
   prosseguir();
 }
 
@@ -488,15 +524,20 @@ king: while(true){
 
 /*
 IMPORTANTE
--inserir período de descanso.
--melhorar aleatoriedade da aparição de monstros(arrumar fugir).
--implementar opções da cidade
+-implementar uso de carne.
+-implementar opções de vender
 -desenvolver mais a lore da investigação.
 
 
 -colocar contador visual de treino e investigação.
 -implementar detalhes de classe.nnnnnn
--colocar acesso à bolsa.nnnnnnn
+-colocar acesso à bolsa.nnnnnnnnnnnnn
 -implementar função de cores
 
+
+
+
+-Durante a investigação vc observa um brilho estrando nos olhos das criaturas enlouquecidas.
+-Você pesquisa nos resgistros da vila e encontra informações que batem com o comportamento e brilho nos olhos das criaturas, aparentemente se trata de uma Maldição da Alucinação.
+-Você chega conclusão que não vai conseguir mais informações, parece melhor partir atrás de mais repostas fora do vilarejo.
 */
