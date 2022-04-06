@@ -100,7 +100,7 @@ function inimigo(nome, pv, ataque) {
         this.alucinado = true;
       }
     },
-
+    //Método para resetar a vida do objeto inimigo
     this.resetpv = function resetpv() {
       this.pv = this.pvpadrao;
       if (this.alucinado == true) {
@@ -108,7 +108,7 @@ function inimigo(nome, pv, ataque) {
         this.alucinado = false;
       }
     },
-
+    //Método para resetar efeito alucinado do objeto inimigo
     this.desalucinar = function desalucinar() {
       this.ataque /= 2;
       this.nome = this.nome.slice(0, -10);
@@ -184,8 +184,8 @@ function exibicao_de_dados() {
   console.clear();
   console.log("\t\t\t\t\t\t\t" + cor(tempo.exibir(), "ciano"));
   console.log("-" + cor(personagem.nome, "ciano italico") + "-")
-  console.log(" Vida: " + cor(personagem.pv, "verde") + "\t\t\t\t\t\t" + cor("Ervas Vermelhas", "vermelho") + ": " + personagem.bolsa.erva_vermelha);
-  console.log(" Ataque: " + cor(personagem.ataque, "amarelo") + "\t\t\t\t\t\t" + cor("Moedas", "amarelo") + ": " + personagem.bolsa.moedas);
+  console.log(" Vida: " + cor(personagem.pv, "verde") + "\t\t\t\t\t\tErvas Vermelhas: " + cor(personagem.bolsa.erva_vermelha, "vermelho"));
+  console.log(" Ataque: " + cor(personagem.ataque, "amarelo") + "\t\t\t\t\t\tMoedas: " + cor(personagem.bolsa.moedas, "amarelo"));
   //console.log(15+(tempo.dia*5));
   console.log();
 }
@@ -206,7 +206,6 @@ function batalha(fase) {
     enemy = lista_enemy[4];
   }
   enemy.alucinar();
-  //setTimeout(".")*1000;
   exibicao_de_dados();
   console.log("Um", enemy.nome, "aparaceu!");
   prosseguir();
@@ -232,7 +231,7 @@ function batalha(fase) {
         let recompensa = rng(11) + 14;
         personagem.bolsa.moedas += recompensa;
         console.log("Você obteve, " + recompensa + " Moedas.");
-        if (rng(3) > 1 && enemy.nome == "Cervo") {
+        if (rng(4) > 1 && enemy.nome == "Cervo") {
           personagem.bolsa.chifre_de_cervo += 1;
           console.log("Você obteve, 1 Chifre de Cervo.");
         }
@@ -326,7 +325,7 @@ function cidade() {
   city: while (true) {
     console.clear();
     exibicao_de_dados();
-    console.log("1. Vender 5 chifres de cervo. (30 moedas)");
+    console.log("1. Vender 5 chifres de cervo. (30 moedas)\t Chifres:" + personagem.bolsa.chifre_de_cervo);
     console.log("2. Comprar " + personagem.bolsa.armapadrao + " de Prata. (300 Moedas)");
     console.log("3. Voltar para o vilarejo - 2h");
     let choose = +prompt(">>");
@@ -419,8 +418,8 @@ let caracteres = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZãõáéí
 let ok = true;
 
 //While de validação de nome.
-while (true) {
-  let nome = prompt("Seu nome:")
+ext: while (true) {
+  let nome = prompt("Qual é seu seu nome: ")
   if (nome.length >= 13 || nome.length <= 2) {
     console.clear();
     console.log("Nome muito grande ou pequeno, digite no máximo 12 caracteres e no mínimo 3.");
@@ -436,17 +435,21 @@ while (true) {
     }
     if (ok == false) {//se qualquer caracter inválido aparecer reseta a verificação e pede uma nova entrada.
       console.clear();
-      console.log("Não é permitido caracteres especiais, espaços ou números");
+      console.log(cor("Não é permitido caracteres especiais, espaços ou números", "vermelho"));
       break;//se caracter não for correspondente a lista de caracteres validos encerra for externo com "ok" falso
     }
   }
   if (ok == true) {//se todos os caracteres forem validos encerra while de validação
-    personagem.nome = nome;
-    console.log("Seu nome é " + personagem.nome + ", correto?(S/N)");
-    let eh = prompt(">>");
-    eh = eh.toLowerCase();
-    if (eh == "s") {
-      break;
+    while (true) {
+      personagem.nome = nome;
+      console.log("Seu nome é " + personagem.nome + ", correto?(S/N)");
+      let eh = prompt(">>");
+      eh = eh.toLowerCase();
+      if (eh == "s") {
+        break ext;
+      } else if (eh == "n") {
+        break;
+      }
     }
   }
 }
@@ -461,7 +464,7 @@ while (true) {
   console.log("1. Guerreiro-> Resistente, seus ataques são fortes porém lentos.");
   console.log("2. Ninja-> Semi-resistente, seus ataques são fracos porém rápidos e com chances elevadas de causar danos críticos.");
   console.log("3. Arqueiro-> Frágil porém com chances elevadas de se esquivar evitando qualquer dano e seus ataques são fortes e rápidos.");
-  console.log("4. Exibir detalhes dos status de cada classe.");
+  console.log("4. Exibir detalhes dos status iniciais de cada classe.");
 
   console.log();
   console.log("Digite 1, 2, 3 ou 4.")
@@ -471,7 +474,9 @@ while (true) {
     break;
   }
   if (entrada == 4) {
-    console.log("Em desenvolvimento ;)");
+    console.log("Guerreiro:\nAtaque: 8, Defesa: 4, Taxa de Acerto: 50%, Taxa de Crítico: 1%, Taxa de Esquiva: 1%\n");
+    console.log("Ninja:\nAtaque: 4, Defesa: 2, Taxa de Acerto: 100%, Taxa de Crítico: 50%, Taxa de Esquiva: 1%\n");
+    console.log("Arqueiro:\nAtaque: 8, Defesa: 1, Taxa de Acerto: 100%, Taxa de Crítico: 1%, Taxa de Esquiva: 50%\n");
     prosseguir();
     console.clear();
     continue;
@@ -479,6 +484,8 @@ while (true) {
   console.clear();
   console.log("Resposta inválida.");
 }
+
+
 
 
 //*************************************************************************************
@@ -571,34 +578,7 @@ king: while (true) {
 
 
 
-//Interactive game, "Curse of hallucination", version: 0.1;
-
-//Qual é o seu nome?//validação de texto
-//Seu nome é **** correto?
-
-
-
-//Você é um habitante de um país chamado Hutal e mora num pequeno vilarejo no canto deste país, e você é o líder deste vilarejo e recentemente tem tido problemas com seres enlouquecido aparecendo em florestas e estradas, atrapalhando a caça, a coleta e o transporte de mercadorias.
-//Como líder você deve resolver este problema, pelo o bem estar de seus moradores.
-
-
-
-//Sua classe de combate é:
-//1-Guerreiro-> Resistente, seus ataques são fortes porém lentos.
-//2-Ninja-> Semi-resistente, seus ataques são fracos porém rápidos e com chances elevadas de causar danos críticos.
-//3-Arqueiro-> Frágil porém com chances elevadas de se esquivar evitando qualquer dano e seus ataques são fortes e rápidos.
-//4-Exibir detalhes dos status de cada classe.
-
-//Aperte enter para começar.
-
-
-// CICLO-01
-//1-Sair para caçar e coletar.(75% de chance de entrar numa batalha)batalhar dão recursos(comida e dinheiro), sempre coleta ervas medicinais.
-//2-Treinar.
-//3-Ir a cidade próxima para comprar e vender recursos.(Vender comida para conseguir dinheiro)(comprar espada)
-//4-Investigar o que pode estar eslouquecendo as criaturas.
-//5-Deixar o vilarejo aos cuidados da sua filha mais velha e partir para próxima região.(opção liberada apenas depois de ter avançado nas investigações)
-
+//EXTRA -
 // CICLO-02
 //1-caçar e coletar.
 //2-Eplorar área.
@@ -607,27 +587,7 @@ king: while (true) {
 //5-Subir a montanha(opção liberada apenas depois de ter avançado nas investigações)
 //
 
+//EXTRA - Dragão:"Seus esforços não vão consertar os erros e a insolência de seu Rei"(Derrote o Rei).
+//EXTRA - Adicionar idioma inglês e japonês :P.
 
-
-//EXTRA - Seus esforços não vão consertar os erros e a insolência de seu Rei.
-//EXTRA - Adicionar idioma inglês e japonês.
-
-//Resposta criptografada para a pergunta que pode dar uma Vida extra.
-
-
-//console.log("oi");
-
-/*
-IMPORTANTE
--implementar função de cores
--implementar detalhes de classe.
--colocar acesso à bolsa.nnnnnnnnnnnnn
-
-
-
-
-
--Durante a investigação vc observa um brilho estrando nos olhos das criaturas enlouquecidas.
--Você pesquisa nos resgistros da vila e encontra informações que batem com o comportamento e brilho nos olhos das criaturas, aparentemente se trata de uma Maldição da Alucinação.
--Você chega conclusão que não vai conseguir mais informações, parece melhor partir atrás de mais repostas fora do vilarejo.
-*/
+//EXTRA - Resposta criptografada para a pergunta que pode dar uma Vida extra.
