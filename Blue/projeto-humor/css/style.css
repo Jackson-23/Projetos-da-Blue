@@ -59,13 +59,14 @@ div#image {
   border: 10px;
   border-color: rgb(0, 0, 0);
   margin: 1rem;
+  justify-content: center;
 }
 div#descritiva{
   width: 400px;
   display: flexbox;
   padding: 1rem;
   border: 10px;
-  border-color: rgb(0, 0, 0);
+  border-color:3px solid rgb(0, 0, 0);
   margin: 1rem;
 }
 section {
@@ -107,6 +108,8 @@ html, body {
 /* Flex */
 .flex {
 	flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
 }
 
 .flex-wrap {
