@@ -17,6 +17,7 @@ img#logo {
 }
 img#gif{
     size: 100%;
+    max-width: 100%;
 }
 
 body{
@@ -60,7 +61,8 @@ div#image {
   margin: 1rem;
 }
 div#descritiva{
-    display: flexbox;
+  width: 400px;
+  display: flexbox;
   padding: 1rem;
   border: 10px;
   border-color: rgb(0, 0, 0);
@@ -91,12 +93,33 @@ button:hover {
   text-shadow: none;
 }
 
-.container { 
-    width: 0px; 
-    margin-left: auto;
-    margin-right: auto; 
-}
-
 html, body {
     overflow-x: hidden;
+}
+
+.container { 
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid #aaa;
+}
+
+
+/* Flex */
+.flex {
+	flex-wrap: wrap;
+}
+
+.flex-wrap {
+	flex-wrap: wrap;
+}
+
+.flex-item-1 {
+	flex: 1;
+}
+
+/* Flex Item */
+.item {
+	margin: 5px;
+	text-align: center;
+	font-size: 1.2em;
 }
